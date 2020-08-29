@@ -1,6 +1,6 @@
 import re
-fname = input('Input a file:')
-fhand = open(fname)
+
+fhand = open('regex_sum_903392.txt')
 count = 0
 sumy = 0
 for line in fhand:
