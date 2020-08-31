@@ -1,34 +1,42 @@
-import urllib.request, urllib.parse, urllib.error
 import json
+import urllib.parse, urllib.request
+import ssl
 
-serviceurl = 'http://py4e-data.dr-chuck.net/geojson?'
+api_key = False
+is_test = False
+
+if api_key is False:
+    api_key = 42
+    serviceurl = 'http://py4e-data.dr-chuck.net/json?'
+else:
+    serviceurl = 'https://maps.googleapis.com/maps/api/geocode/json?'
+
+# Ignore SSL certificate errors
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
 
 while True:
     address = input('Enter location: ')
-    if len(address) < 1: break
+    if len(address) < 1:
+        break
 
-    url = serviceurl + urllib.parse.urlencode(
-        {'address': address})
+    parms = dict()
+    parms['address'] = address
+    if api_key is not False: parms['key'] = api_key
+    url = serviceurl + urllib.parse.urlencode(parms)
 
     print('Retrieving', url)
-    uh = urllib.request.urlopen(url)
+    uh = urllib.request.urlopen(url, context = ctx)
     data = uh.read().decode()
+    if is_test is True:
+        print('data:', data)
     print('Retrieved', len(data), 'characters')
-    print(data)
 
     try:
         js = json.loads(data)
-        print(js)
     except:
         js = None
 
-    if not js or 'status' not in js or js['status'] != 'OK':
-        print('==== Failure To Retrieve ====')
-        print(data)
-        continue
-
-    print(json.dumps(js, indent=4))
-    location = js['results'][0]['formatted_address']
-    print(location)
-    place_id = js["results"][0]["place_id"]
+    place_id = js['results'][0]['place_id']
     print(place_id)
