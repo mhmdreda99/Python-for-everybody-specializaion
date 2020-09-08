@@ -1,4 +1,8 @@
 import re
+import socket
+
+
+
 
 fhand = open('regex_sum_903392.txt')
 count = 0
@@ -12,3 +16,4 @@ for line in fhand:
             sumy = sumy + i
             count = count + 1
 print('There are',count,'values with a sum=',sumy)
+
